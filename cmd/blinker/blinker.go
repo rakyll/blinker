@@ -50,8 +50,8 @@ func main() {
 	}
 
 	go func() {
-		// TODO(jbd): Use mdns or another p2p
-		// for communication.
+		// TODO(jbd): Use mdns after https://github.com/hashicorp/mdns/issues/44
+		// is resolved for communication.
 		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			ms := r.URL.Query().Get("t")
 			if ms != "" {
