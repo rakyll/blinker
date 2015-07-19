@@ -107,9 +107,9 @@ func onPaint(c config.Event) {
 
 var rectData = f32.Bytes(binary.LittleEndian,
 	0, 0,
-	0, 0.1,
-	0.1, 0,
-	0.1, 0.1,
+	0, 0.2,
+	0.2, 0,
+	0.2, 0.2,
 )
 
 const (
