@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sync"
 
 	"golang.org/x/mobile/app"
 	"golang.org/x/mobile/event/config"
@@ -107,14 +108,35 @@ func onPaint(c config.Event) {
 	gl.DisableVertexAttribArray(position)
 }
 
+var mu sync.Mutex
+var req *http.Request
+var transport = &http.Transport{}
+
 func updateBlinker() {
 	r := float32(touchLoc.Y/c.Height) * 200
 	// TODO(jbd): Don't hardcode the server.
-	// TODO(jbd): Switch to mdns or another p2p protocol
-	_, err := http.Get(fmt.Sprintf("http://10.0.1.9:8080?t=%d", int(r)))
+	// TODO(jbd): Switch to mdns or another p2p protocol.
+	// TODO(jbd): Cancel the ongoing request.
+	mu.Lock()
+	if req != nil {
+		fmt.Printf("cancelling request: %v\n", req)
+		transport.CancelRequest(req)
+	}
+	mu.Unlock()
+
+	mu.Lock()
+	req, _ = http.NewRequest("GET", fmt.Sprintf("http://10.0.1.9:8080?t=%d", int(r)), nil)
+	mu.Unlock()
+
+	c := &http.Client{Transport: transport}
+	_, err := c.Do(req)
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	mu.Lock()
+	req = nil
+	mu.Unlock()
 }
 
 var rectData = f32.Bytes(binary.LittleEndian,
