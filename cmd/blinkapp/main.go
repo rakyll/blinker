@@ -35,7 +35,6 @@ var (
 	color    gl.Uniform
 	buf      gl.Buffer
 
-	green    float32
 	touchLoc geom.Point
 )
 
@@ -110,11 +109,6 @@ var rectData = f32.Bytes(binary.LittleEndian,
 	0, 0.2,
 	0.2, 0,
 	0.2, 0.2,
-)
-
-const (
-	coordsPerVertex = 3
-	vertexCount     = 3
 )
 
 const vertexShader = `#version 100
