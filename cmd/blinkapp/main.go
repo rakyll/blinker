@@ -15,7 +15,9 @@ package main
 
 import (
 	"encoding/binary"
+	"fmt"
 	"log"
+	"net/http"
 
 	"golang.org/x/mobile/app"
 	"golang.org/x/mobile/event/config"
@@ -35,12 +37,12 @@ var (
 	color    gl.Uniform
 	buf      gl.Buffer
 
+	c        config.Event
 	touchLoc geom.Point
 )
 
 func main() {
 	app.Main(func(a app.App) {
-		var c config.Event
 		for e := range a.Events() {
 			switch e := app.Filter(e).(type) {
 			case lifecycle.Event:
@@ -58,6 +60,7 @@ func main() {
 				a.EndPaint()
 			case touch.Event:
 				touchLoc = e.Loc
+				go updateBlinker()
 			}
 		}
 	})
@@ -102,6 +105,16 @@ func onPaint(c config.Event) {
 	gl.VertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0)
 	gl.DrawArrays(gl.TRIANGLE_STRIP, 0, 4)
 	gl.DisableVertexAttribArray(position)
+}
+
+func updateBlinker() {
+	r := float32(touchLoc.Y/c.Height) * 200
+	// TODO(jbd): Don't hardcode the server.
+	// TODO(jbd): Switch to mdns or another p2p protocol
+	_, err := http.Get(fmt.Sprintf("http://10.0.1.9:8080?t=%d", int(r)))
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 var rectData = f32.Bytes(binary.LittleEndian,
