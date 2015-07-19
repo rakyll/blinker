@@ -118,7 +118,7 @@ func updateBlinker() {
 	// TODO(jbd): Switch to mdns or another p2p protocol.
 	mu.Lock()
 	if req != nil {
-		fmt.Printf("cancelling request: %v\n", req)
+		fmt.Printf("cancelling request: %v\n", req.URL)
 		transport.CancelRequest(req)
 	}
 	mu.Unlock()
