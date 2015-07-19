@@ -116,7 +116,6 @@ func updateBlinker() {
 	r := float32(touchLoc.Y/c.Height) * 200
 	// TODO(jbd): Don't hardcode the server.
 	// TODO(jbd): Switch to mdns or another p2p protocol.
-	// TODO(jbd): Cancel the ongoing request.
 	mu.Lock()
 	if req != nil {
 		fmt.Printf("cancelling request: %v\n", req)
